@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 
-#include "Display.h"
+#include "MpsDisplay.h"
 #include "MpsMidi.h"
  
 MpsDisplay display = MpsDisplay();
@@ -13,7 +13,6 @@ void setup() {
   midi.Initialize();
   display.Initialize();
   display.ShowSplash();
-  display.UpdateValues(10, 128);
 }
 
 void loop() {

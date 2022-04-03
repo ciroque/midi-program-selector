@@ -16,7 +16,6 @@ public:
 
   void Initialize(void) {
     Serial1.begin(MIDI_BAUD_RATE);
-//    while(!Serial) { ; }
   }
   
   void SendProgramChange(byte channel, byte program) {
