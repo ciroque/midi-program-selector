@@ -17,6 +17,7 @@ private:
   const int OLED_RESET = 4;
   const int SCREEN_ADDRESS = 0x3C;
 
+  const char* PAD_ZERO = "0";
   
   const int CHANNEL_LABEL_X = 0;
   const int CHANNEL_LABEL_Y = 0;
@@ -26,6 +27,8 @@ private:
 
   const int VALUE_Y = 6;
   const int VALUE_X_OFFSET = 15;
+
+  const int ZERO_BASE_OFFSET = 1;
 
   Adafruit_SSD1306 display;
 
@@ -63,12 +66,12 @@ private:
   }
 
   void DrawPaddedTens(byte number) {
-    if(number < 10) { display.print("0"); }
+    if(number < 10) { display.print(PAD_ZERO); }
     display.print(number);
   }
 
   void DrawPaddedHundreds(byte number) {
-    if(number < 100) { display.print("0"); }
+    if(number < 100) { display.print(PAD_ZERO); }
     DrawPaddedTens(number);
   }
   
@@ -91,15 +94,15 @@ public:
     
     Update();
     
-    delay(2000); // Pause for 2 seconds
+    delay(2000);
   }
 
   void Update(CurrentChannelProgram currentState) {
     display.clearDisplay();
     DrawLabels();
     display.setTextSize(3);
-    DrawChannel(currentState.channel + 1);
-    DrawProgram(currentState.program + 1);
+    DrawChannel(currentState.channel + ZERO_BASE_OFFSET);
+    DrawProgram(currentState.program + ZERO_BASE_OFFSET);
 
     Update();
   }

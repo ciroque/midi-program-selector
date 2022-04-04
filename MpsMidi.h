@@ -12,9 +12,18 @@ private:
   const int PROGRAM_CHANGE_COMMAND = 0xC0;
   const int CHANNELIZATION_MASK = 0x0F;
   const int PROGRAM_WRAP_MASK = 0x7F;
+  const int TEN_STEP = 10;
 
   byte currentChannel = 0;
   byte programs[16];
+
+  byte ApplyChannelConstraint() {
+    currentChannel &= CHANNELIZATION_MASK;
+  }
+
+  byte ApplyProgramConstraint() {
+    programs[currentChannel] &= PROGRAM_WRAP_MASK;
+  }
 
   byte ProgramChangeCommand(byte channel) {
     return PROGRAM_CHANGE_COMMAND | (channel & CHANNELIZATION_MASK);
@@ -38,7 +47,7 @@ public:
 
   CurrentChannelProgram IncrementProgram() {
     programs[currentChannel]++;
-    programs[currentChannel] &= PROGRAM_WRAP_MASK;
+    ApplyProgramConstraint();
     SendProgramChange(currentChannel, programs[currentChannel]);
 
     return CurrentState();
@@ -46,23 +55,23 @@ public:
 
   CurrentChannelProgram DecrementProgram() {
     programs[currentChannel]--;
-    programs[currentChannel] &= PROGRAM_WRAP_MASK;
+    ApplyProgramConstraint();
     SendProgramChange(currentChannel, programs[currentChannel]);
 
     return CurrentState();
 }
 
   CurrentChannelProgram IncrementProgramTen() {
-    programs[currentChannel] += 10;
-    programs[currentChannel] &= PROGRAM_WRAP_MASK;
+    programs[currentChannel] += TEN_STEP;
+    ApplyProgramConstraint();
     SendProgramChange(currentChannel, programs[currentChannel]);
 
     return CurrentState();
   }
 
   CurrentChannelProgram DecrementProgramTen() {
-    programs[currentChannel] -= 10;
-    programs[currentChannel] &= PROGRAM_WRAP_MASK;
+    programs[currentChannel] -= TEN_STEP;
+    ApplyProgramConstraint();
     SendProgramChange(currentChannel, programs[currentChannel]);
 
     return CurrentState();
@@ -70,14 +79,14 @@ public:
 
   CurrentChannelProgram IncrementChannel() {
      currentChannel++;
-     currentChannel &= CHANNELIZATION_MASK;
+     ApplyChannelConstraint();
 
     return CurrentState();
   }
 
   CurrentChannelProgram DecrementChannel() {
      currentChannel--;
-     currentChannel &= CHANNELIZATION_MASK;  
+     ApplyChannelConstraint();
 
     return CurrentState();
   }
