@@ -5,23 +5,70 @@
 
 #include "MpsDisplay.h"
 #include "MpsMidi.h"
+#include "MpsButtonScanner.h"
  
 MpsDisplay display = MpsDisplay();
 MpsMidi midi = MpsMidi();
+MpsButtonScanner buttonScanner = MpsButtonScanner();
 
 void setup() {
   midi.Initialize();
+  buttonScanner.Initialize();
   display.Initialize();
   display.ShowSplash();
 }
 
 void loop() {
-  delay(3000);
+  CurrentChannelProgram currentState;
+  
+  switch(buttonScanner.Poll()) {
+    case ButtonAction::NO_ACTION: {
+      break;
+    }
 
-  
-  byte channel = random(0, 9); // zero-based channel
-  byte program = random(0, 127); // zero-based program
-  
-  display.UpdateValues(channel, program);
-  midi.SendProgramChange(channel, program);
+    case ButtonAction::PROGRAM_UP_ONE: {
+      Serial.println("PROGRAM_UP_ONE");
+      currentState = midi.IncrementProgram();
+      break;
+    }
+
+    case ButtonAction::PROGRAM_DOWN_ONE: {
+      Serial.println("PROGRAM_DOWN_ONE");
+      currentState = midi.DecrementProgram();
+      break;
+    }
+    
+    case ButtonAction::PROGRAM_UP_TEN: {
+      Serial.println("PROGRAM_UP_TEN");
+      currentState = midi.IncrementProgramTen();
+      break;
+    }
+    
+    case ButtonAction::PROGRAM_DOWN_TEN: {
+      Serial.println("PROGRAM_DOWN_TEN");
+      currentState = midi.DecrementProgramTen();
+      break;
+    }
+    
+    case ButtonAction::CHANNEL_UP: {
+      Serial.println("CHANNEL_UP");
+      currentState = midi.IncrementChannel();
+      break;
+    }
+    
+    case ButtonAction::CHANNEL_DOWN: {
+      Serial.println("CHANNEL_DOWN");
+      currentState = midi.DecrementChannel();
+      break;
+    }
+    
+    default: {
+      Serial.println("default");
+      break;
+    }
+  }
+
+  display.Update(currentState);
+
+  delay(1000);
 }

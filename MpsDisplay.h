@@ -7,7 +7,7 @@
 
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
-
+#include "MpsMidi.h"
 
 class MpsDisplay {
 private:
@@ -94,12 +94,12 @@ public:
     delay(2000); // Pause for 2 seconds
   }
 
-  void UpdateValues(int channel, int program) {
+  void Update(CurrentChannelProgram currentState) {
     display.clearDisplay();
     DrawLabels();
     display.setTextSize(3);
-    DrawChannel(channel + 1);
-    DrawProgram(program + 1);
+    DrawChannel(currentState.channel + 1);
+    DrawProgram(currentState.program + 1);
 
     Update();
   }
